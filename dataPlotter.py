@@ -1,35 +1,45 @@
 import matplotlib.pyplot as plt
 import random
 from matplotlib import animation
+import time
 
+
+start_time = time.time();
 x_axis = ['Voltage', 'Current', 'Power', 'RPM', 'Energy']
-nf = 30  #Number of frames
-fig = plt.figure(figsize=(15, 7))
 
-plt.subplot(151)
-xv = plt.bar('Voltage', 20, color='red')
-plt.autoscale(enable=True, axis='y')
+v_max = 5           # max voltage
+c_max = 5           # max current
+p_max = 25          # max power
+r_max = 5           # max rpm
+e_max = 5           # max energy
+
+
+nf = 100  #Number of frames
+
+
+
+fig = plt.figure(figsize=(15, 7))
+plt.suptitle("Elapsed Time", fontsize=20)
+
+v_plot = plt.subplot(151)
+xv = plt.bar('Voltage', v_max, color='red')
 plt.title('Voltage (V)')
 
-plt.subplot(152)
-xc = plt.bar('Current', 30, color='orange')
-plt.autoscale(enable=True, axis='y')
+c_plot = plt.subplot(152)
+xc = plt.bar('Current', c_max, color='orange')
 plt.title('Current (A)')
 
-plt.subplot(153)
-xp = plt.bar('Power', 40, color='yellow')
-plt.autoscale(enable=True, axis='y')
+p_plot = plt.subplot(153)
+xp = plt.bar('Power', p_max, color='yellow')
 plt.title('Power (W)')
 
-plt.subplot(154)
-xe = plt.bar('RPM', 30, color='green')
-plt.autoscale(enable=True, axis='y')
+r_plot = plt.subplot(154)
+xe = plt.bar('RPM', r_max, color='green')
 plt.title('RPM')
 
-plt.subplot(155)
-xr = plt.bar('Energy', 20, color='cyan')
-plt.autoscale(enable=True, axis='y')
-plt.title('Energy (W/h)')
+e_plot = plt.subplot(155)
+xr = plt.bar('Energy', e_max, color='cyan')
+plt.title('Energy (J)')
 
 count = 0
 
@@ -84,13 +94,28 @@ def barlist():
 
 
 def animate(i):
-    global count, xv, xc, xp, xe, xr
+    global count, xv, xc, xp, xe, xr, v_max, c_max, p_max, r_max, e_max, v_plot, c_plot, p_plot, r_plot, e_plot
+    fig.suptitle("Elapsed Time:" + time.strftime("00:%M:%S", time.localtime(time.time() - start_time)))
     height_vals = barlist()
+
     xv[0].set_height(height_vals['Voltage'][count])
+    if height_vals['Voltage'][count] > v_max:
+        v_max = height_vals['Voltage'][count]
+        v_plot
+        plt.ylim(top=v_max)
+
     xc[0].set_height(height_vals['Current'][count])
+
+
     xp[0].set_height(height_vals['Power'][count])
+
+
     xr[0].set_height(height_vals['RPM'][count])
+
+
     xe[0].set_height(height_vals['Energy'][count])
+
+
     count = (count + 1) % (len(height_vals['Energy'])-1)
 
 
