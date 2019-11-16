@@ -1,13 +1,7 @@
-#!/usr/bin/env python
-
 import matplotlib.pyplot as plt
 import random
-import time
-import os
-import sys
 from matplotlib import animation
-from matplotlib.widgets import Button
-
+import time
 
 start_time = time.time()
 x_axis = ['Voltage', 'Current', 'Power', 'RPM', 'Energy']
@@ -29,46 +23,33 @@ fig = plt.figure(figsize=(100, 100))
 plt.suptitle("Elapsed Time: 00:00:00", fontsize=20)
 
 v_plot = plt.subplot(151)
-xv = plt.bar('Volts', v_max, color='red')
-plt.title('Voltage')
+xv = plt.bar('Voltage', v_max, color='red')
+plt.title('Volts')
 
 c_plot = plt.subplot(152)
-xc = plt.bar('Amperes', c_max, color='orange')
-plt.title('Current')
+xc = plt.bar('Current', c_max, color='orange')
+plt.title('Amperes')
 
 p_plot = plt.subplot(153)
-xp = plt.bar('Watts', p_max, color='yellow')
-plt.title('Power')
+xp = plt.bar('Power', p_max, color='yellow')
+plt.title('Watts')
 
 r_plot = plt.subplot(154)
 xe = plt.bar('RPM', r_max, color='green')
 plt.title('RPM')
 
 e_plot = plt.subplot(155)
-xr = plt.bar('Joules', e_max, color='cyan')
-plt.title('Energy')
+xr = plt.bar('Energy', e_max, color='cyan')
+plt.title('Joules')
 ##############################################################
 
-#clear file
+# attempt connection
 #############################################
-f = open('testData.txt', 'w')
-f.write('')
-f.close()
-#############################################
+while not connected:
+    # do nothing
 
-#populate file with random data
-###################################################################################
-counter = 0
-f = open('testData.txt', 'a')
-while counter < 1000:
-    strtext = "" + x_axis[counter % 5] + ", " + str(random.randint(0, 25)) + "\n"
-    f.write(strtext)
-    counter += 1
-f.close()
 ###################################################################################
 
-def reset (i):
-    os.execl(sys.executable, sys.executable, *sys.argv)
 
 def barlist():
     graph_data = open('testData.txt', 'r').read()       #dont need to read the whole file in every iteration
@@ -146,7 +127,7 @@ plt.title('Voltage')
 plt.text(0, (v_max+1)/2, ""+str(v_max)+" V", horizontalalignment='center', verticalalignment='center', fontsize=18)
 
 plt.subplot(172)
-xc = plt.bar('Amperes', c_max+1, color='orange')
+xc = plt.bar('Ampere', c_max+1, color='orange')
 plt.title('Current')
 plt.text(0, (c_max+1)/2, ""+str(c_max)+" A", horizontalalignment='center', verticalalignment='center', fontsize=18)
 
@@ -179,9 +160,5 @@ plt.title('Energy ($)')
 plt.text(0, (e_kwh+0.05)/2, "$ "+str(e_kwh)[0:str(e_kwh).find('.')+3], horizontalalignment='center',
          verticalalignment='center', fontsize=18)
 
-
-button_axis = plt.axes([0.4625, 0.025, 0.1, 0.05])
-btn_restart = Button(button_axis, 'Restart', color='lightsteelblue', hovercolor='slateblue')
-btn_restart.on_clicked(reset)
 plt.show()
 ###################################################################################################################
