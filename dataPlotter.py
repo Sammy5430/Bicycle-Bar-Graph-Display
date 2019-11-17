@@ -9,6 +9,7 @@ import tkinter as tk
 from tkinter import ttk, PhotoImage
 from matplotlib import animation
 from matplotlib.widgets import Button
+from datetime import datetime
 
 
 # Await connection with ESP8266 Module
@@ -80,10 +81,11 @@ while not connected:
             display.configure(image=load_img)
             frame_count += 1
             tk_window.update()
-            tk_window.after(5)
+            tk_window.after(8)
         # tk_window.update()
 ###############################################################################################################
 
+t_stamp = datetime.now().strftime('%B-%d-%Y %I:%M%p')
 start_time = time.time()
 x_axis = ['Voltage', 'Current', 'Power', 'RPM', 'Energy']
 
@@ -215,7 +217,8 @@ plt.show()
 # Show Summary
 ###################################################################################################################
 fig = plt.figure(figsize=(100, 100))
-plt.suptitle("Elapsed Time: " + time.strftime("00:%M:%S", time.localtime(time.time() - start_time)), fontsize=20)
+elapsed_time = time.strftime("00:%M:%S", time.localtime(time.time() - start_time))
+plt.suptitle("Elapsed Time: " + elapsed_time, fontsize=20)
 
 plt.subplot(171)
 xv = plt.bar('Volts', v_max+1, color='red')
@@ -260,5 +263,21 @@ plt.text(0, (e_kwh+0.05)/2, "$ "+str(e_kwh)[0:str(e_kwh).find('.')+3], horizonta
 button_axis = plt.axes([0.4625, 0.025, 0.1, 0.05])
 btn_restart = Button(button_axis, 'Restart', color='lightsteelblue', hovercolor='slateblue')
 btn_restart.on_clicked(reset)
+
+# add entry to log file
+####################################################################################################################
+try:
+    log = open('resources/files/logfile.csv', 'x')
+    log.close()
+    log = open('resources/files/logfile.csv', 'w')
+    log.write('Timestamp, Elapsed Time, Max Voltage, Max Current, Max Power, Max RPM, Max Energy\n')
+    log.close()
+except:
+    pass
+log = open('resources/files/logfile.csv', 'a')
+log.write(t_stamp+','+elapsed_time+','+str(v_max)+','+str(c_max)+','+str(p_max)+','+str(r_max)+','+str(e_max)+'\n')
+log.close()
+####################################################################################################################
+
 plt.show()
 ###################################################################################################################
