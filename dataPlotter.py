@@ -5,9 +5,84 @@ import random
 import time
 import os
 import sys
+import tkinter as tk
+from tkinter import ttk, PhotoImage
 from matplotlib import animation
 from matplotlib.widgets import Button
 
+
+# Await connection with ESP8266 Module
+###############################################################################################################
+first_exec = True
+connected = False
+frame_count = 0
+test_counter = 0
+
+while not connected:
+    if first_exec:
+        tk_window = tk.Tk()
+        w = 480  # width for the Tk root
+        h = 290  # height for the Tk root
+        ws = tk_window.winfo_screenwidth()  # width of the screen
+        hs = tk_window.winfo_screenheight()  # height of the screen
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        tk_window.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        tk_window.title('Connecting...')
+        tk_window.resizable(width=False, height=False)
+        if frame_count < 10:
+            index = '00' + str(frame_count)
+        elif frame_count < 100:
+            index = '0' + str(frame_count)
+        else:
+            index = str(frame_count)
+        load_img = PhotoImage(file='resources/images/loading_frames/frame_' + index + '_delay-0.02s.gif')
+        display = ttk.Label(tk_window, image=load_img)
+        display.grid(column=0, row=0)
+        load_msg = ttk.Label(tk_window, text='Establishing connection with ESP8266 module')
+        load_msg.grid(column=0, row=1)
+        frame_count += 1
+        tk_window.update()
+        tk_window.after(5)
+        txt = 'Establishing connection with ESP8266 module'
+        first_exec = False
+    while frame_count <= 200:
+        if frame_count < 10:
+            index = '00' + str(frame_count)
+        elif frame_count < 100:
+            index = '0' + str(frame_count)
+        else:
+            index = str(frame_count)
+        load_img = PhotoImage(file='resources/images/loading_frames/frame_' + index + '_delay-0.02s.gif')
+        frame_count += 1
+        display.configure(image=load_img)
+        if frame_count % 51 == 0:
+            txt = txt + '.'
+        load_msg.configure(text=txt)
+        tk_window.update()
+        tk_window.after(5)
+    frame_count = 0
+    txt = 'Establishing connection with ESP8266 module'
+    test_counter += 1
+
+    # if connection successful
+    if test_counter == 2:
+        connected = True
+        load_msg.configure(text='Connected')
+        while frame_count < 120:
+            if frame_count < 10:
+                index = '00' + str(frame_count)
+            elif frame_count < 100:
+                index = '0' + str(frame_count)
+            else:
+                index = str(frame_count)
+            load_img = PhotoImage(file='resources/images/check_frames/frame_' + index + '_delay-0.02s.gif')
+            display.configure(image=load_img)
+            frame_count += 1
+            tk_window.update()
+            tk_window.after(5)
+        # tk_window.update()
+###############################################################################################################
 
 start_time = time.time()
 x_axis = ['Voltage', 'Current', 'Power', 'RPM', 'Energy']
@@ -67,11 +142,13 @@ while counter < 1000:
 f.close()
 ###################################################################################
 
+
 def reset (i):
     os.execl(sys.executable, sys.executable, *sys.argv)
 
-def barlist():
-    graph_data = open('testData.txt', 'r').read()       #dont need to read the whole file in every iteration
+
+def barlist ():
+    graph_data = open('testData.txt', 'r').read()       # dont need to read the whole file in every iteration
     lines = graph_data.split('\n')
     v_arr = []
     c_arr = []
