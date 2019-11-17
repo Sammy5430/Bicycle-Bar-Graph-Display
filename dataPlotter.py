@@ -106,23 +106,23 @@ fig = plt.figure(figsize=(100, 100))
 plt.suptitle("Elapsed Time: 00:00:00", fontsize=20)
 
 v_plot = plt.subplot(151)
-xv = plt.bar('Volts', v_max, color='red')
+xv = plt.bar('Volts', v_max, color='#F1C40F')
 plt.title('Voltage')
 
 c_plot = plt.subplot(152)
-xc = plt.bar('Amperes', c_max, color='orange')
+xc = plt.bar('Amperes', c_max, color='#E67E22')
 plt.title('Current')
 
 p_plot = plt.subplot(153)
-xp = plt.bar('Watts', p_max, color='yellow')
+xp = plt.bar('Watts', p_max, color='#E74C3C')
 plt.title('Power')
 
 r_plot = plt.subplot(154)
-xe = plt.bar('RPM', r_max, color='green')
+xe = plt.bar('RPM', r_max, color='#8E44AD')
 plt.title('RPM')
 
 e_plot = plt.subplot(155)
-xr = plt.bar('Joules', e_max, color='cyan')
+xr = plt.bar('Joules', e_max, color='#3498DB')
 plt.title('Energy')
 ##############################################################
 
@@ -221,47 +221,47 @@ elapsed_time = time.strftime("00:%M:%S", time.localtime(time.time() - start_time
 plt.suptitle("Elapsed Time: " + elapsed_time, fontsize=20)
 
 plt.subplot(171)
-xv = plt.bar('Volts', v_max+1, color='red')
+xv = plt.bar('Volts', v_max+1, color='#F1C40F')
 plt.title('Voltage')
 plt.text(0, (v_max+1)/2, ""+str(v_max)+" V", horizontalalignment='center', verticalalignment='center', fontsize=18)
 
 plt.subplot(172)
-xc = plt.bar('Amperes', c_max+1, color='orange')
+xc = plt.bar('Amperes', c_max+1, color='#E67E22')
 plt.title('Current')
 plt.text(0, (c_max+1)/2, ""+str(c_max)+" A", horizontalalignment='center', verticalalignment='center', fontsize=18)
 
 plt.subplot(173)
-xp = plt.bar('Watts', p_max+1, color='yellow')
+xp = plt.bar('Watts', p_max+1, color='#E74C3C')
 plt.title('Power')
 plt.text(0, (p_max+1)/2, ""+str(p_max)+" W", horizontalalignment='center', verticalalignment='center', fontsize=18)
 
 plt.subplot(174)
-xe = plt.bar('RPM', r_max+1, color='green')
+xe = plt.bar('RPM', r_max+1, color='#8E44AD')
 plt.title('RPM')
 plt.text(0, (r_max+1)/2, ""+str(r_max)+" RPM", horizontalalignment='center', verticalalignment='center', fontsize=18)
 
 plt.subplot(175)
-xr = plt.bar('Joules', e_max+1, color='cyan')
+xr = plt.bar('Joules', e_max+1, color='#3498DB')
 plt.title('Energy')
 plt.text(0, (e_max+1)/2, ""+str(e_max)+" J", horizontalalignment='center', verticalalignment='center', fontsize=18)
 
 plt.subplot(176)
 e_cal = e_max/4.184
-xcal = plt.bar('Calories', e_cal+1, color='cyan')
+xcal = plt.bar('Calories', e_cal+1, color='#1ABC9C')
 plt.title('Energy (Cal)')
 plt.text(0, (e_cal+1)/2, ""+str(e_cal)[0:str(e_cal).find('.')+3]+" cal", horizontalalignment='center',
          verticalalignment='center', fontsize=18)
 
 plt.subplot(177)
 e_kwh = (e_max/pow(3.6, 6)) * 0.22
-xkwh = plt.bar('US Dollars', e_kwh+0.05, color='cyan')
+xkwh = plt.bar('US Dollars', e_kwh+0.05, color='#2ECC71')
 plt.title('Energy ($)')
 plt.text(0, (e_kwh+0.05)/2, "$ "+str(e_kwh)[0:str(e_kwh).find('.')+3], horizontalalignment='center',
          verticalalignment='center', fontsize=18)
 
 
 button_axis = plt.axes([0.4625, 0.025, 0.1, 0.05])
-btn_restart = Button(button_axis, 'Restart', color='lightsteelblue', hovercolor='slateblue')
+btn_restart = Button(button_axis, 'Restart', color='#AEB6BF', hovercolor='#85929E')
 btn_restart.on_clicked(reset)
 
 # add entry to log file
@@ -270,7 +270,7 @@ try:
     log = open('resources/files/logfile.csv', 'x')
     log.close()
     log = open('resources/files/logfile.csv', 'w')
-    log.write('Timestamp, Elapsed Time, Max Voltage, Max Current, Max Power, Max RPM, Max Energy\n')
+    log.write('Timestamp,Elapsed Time,Max Voltage(V),Max Current(A),Max Power(W),Max RPM(RPM),Max Energy(J)\n')
     log.close()
 except:
     pass
