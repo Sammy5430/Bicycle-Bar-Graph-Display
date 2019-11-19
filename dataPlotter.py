@@ -231,8 +231,9 @@ def barlist():
 def animate(i):
     try:
         socket.gethostbyaddr('192.168.4.1')
-    except socket.herror:
+    except:
         plt.close()
+        return
     else:
         global count, xv, xc, xp, xe, xr, v_max, c_max, p_max, r_max, e_max, v_plot, c_plot, p_plot, r_plot, e_plot
         fig.suptitle("Elapsed Time: " + time.strftime("00:%M:%S", time.localtime(time.time() - start_time)), fontsize=20)
