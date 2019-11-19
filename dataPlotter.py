@@ -1,15 +1,36 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import matplotlib.pyplot as plt
 import random
+import socket
 import time
 import os
+import re
 import sys
 import tkinter as tk
+import requests as req
 from tkinter import ttk, PhotoImage
 from matplotlib import animation
 from matplotlib.widgets import Button
 from datetime import datetime
+
+
+# resp = req.get('http://192.168.4.1')            # HTTP GET Response
+# html = resp.text                             # Get content as HTML String
+# txt = re.sub('<[^<]+?>', '', html)
+# html_arr = str(txt).split()
+#
+# esp_v = html_arr[html_arr.index('Voltage:') + 1]
+# esp_c = html_arr[html_arr.index('Current:') + 1]
+# esp_p = html_arr[html_arr.index('Power:') + 1]
+# esp_r = html_arr[html_arr.index('RPM:') + 1]
+# esp_e = html_arr[html_arr.index('Energy:') + 1]
+#
+# print('voltage: ' + esp_v + '\n')
+# print('current: ' + esp_c + '\n')
+# print('power: ' + esp_p + '\n')
+# print('rpm: ' + esp_r + '\n')
+# print('energy: ' + esp_e + '\n')
 
 
 # Await connection with ESP8266 Module
@@ -67,7 +88,11 @@ while not connected:
     test_counter += 1
 
     # if connection successful
-    if test_counter == 2:
+    try:
+        socket.gethostbyaddr('192.168.4.1')
+    except socket.herror:
+        connected = False
+    else:
         connected = True
         load_msg.configure(text='Connected')
         while frame_count < 120:
@@ -82,7 +107,6 @@ while not connected:
             frame_count += 1
             tk_window.update()
             tk_window.after(8)
-        # tk_window.update()
 ###############################################################################################################
 
 t_stamp = datetime.now().strftime('%B-%d-%Y %I:%M%p')
@@ -99,6 +123,7 @@ e_kwh = 0           # max energy in Kw/h
 
 nf = 100  #Number of frames
 count = 0
+play = True
 
 # Plot graphs
 ##############################################################
@@ -138,14 +163,27 @@ f.close()
 counter = 0
 f = open('testData.txt', 'a')
 while counter < 1000:
-    strtext = "" + x_axis[counter % 5] + ", " + str(random.randint(0, 25)) + "\n"
+    v_rand = random.randint(0, 25)
+    c_rand = random.randint(0, 15)
+    p_rand = v_rand * c_rand
+    r_rand = random.randint(0, 200)
+    e_rand = (counter + 1) / 2
+    strtext = "" + x_axis[counter % 5] + ", " + str(v_rand) + "\n"
     f.write(strtext)
-    counter += 1
+    strtext = "" + x_axis[(counter + 1) % 5] + ", " + str(c_rand) + "\n"
+    f.write(strtext)
+    strtext = "" + x_axis[(counter + 2) % 5] + ", " + str(p_rand) + "\n"
+    f.write(strtext)
+    strtext = "" + x_axis[(counter + 3) % 5] + ", " + str(r_rand) + "\n"
+    f.write(strtext)
+    strtext = "" + x_axis[(counter + 4) % 5] + ", " + str(e_rand) + "\n"
+    f.write(strtext)
+    counter += 5
 f.close()
 ###################################################################################
 
 
-def reset (i):
+def reset(i):
     os.execl(sys.executable, sys.executable, *sys.argv)
 
 
@@ -179,36 +217,41 @@ def barlist ():
 
 
 def animate(i):
-    global count, xv, xc, xp, xe, xr, v_max, c_max, p_max, r_max, e_max, v_plot, c_plot, p_plot, r_plot, e_plot
-    fig.suptitle("Elapsed Time: " + time.strftime("00:%M:%S", time.localtime(time.time() - start_time)), fontsize=20)
-    height_vals = barlist()
+    try:
+        socket.gethostbyaddr('192.168.4.1')
+    except socket.herror:
+        plt.close()
+    else:
+        global count, xv, xc, xp, xe, xr, v_max, c_max, p_max, r_max, e_max, v_plot, c_plot, p_plot, r_plot, e_plot
+        fig.suptitle("Elapsed Time: " + time.strftime("00:%M:%S", time.localtime(time.time() - start_time)), fontsize=20)
+        height_vals = barlist()
 
-    xv[0].set_height(height_vals['Voltage'][count])
-    if height_vals['Voltage'][count] > v_max:
-        v_max = height_vals['Voltage'][count]
-        v_plot.axes.set_ylim(top=v_max+7)
+        xv[0].set_height(height_vals['Voltage'][count])
+        if height_vals['Voltage'][count] > v_max:
+            v_max = height_vals['Voltage'][count]
+            v_plot.axes.set_ylim(top=v_max+7)
 
-    xc[0].set_height(height_vals['Current'][count])
-    if height_vals['Current'][count] > c_max:
-        c_max = height_vals['Current'][count]
-        c_plot.axes.set_ylim(top=c_max+7)
+        xc[0].set_height(height_vals['Current'][count])
+        if height_vals['Current'][count] > c_max:
+            c_max = height_vals['Current'][count]
+            c_plot.axes.set_ylim(top=c_max+7)
 
-    xp[0].set_height(height_vals['Power'][count])
-    if height_vals['Power'][count] > p_max:
-        p_max = height_vals['Power'][count]
-        p_plot.axes.set_ylim(top=p_max+7)
+        xp[0].set_height(height_vals['Power'][count])
+        if height_vals['Power'][count] > p_max:
+            p_max = height_vals['Power'][count]
+            p_plot.axes.set_ylim(top=p_max+7)
 
-    xr[0].set_height(height_vals['RPM'][count])
-    if height_vals['RPM'][count] > r_max:
-        r_max = height_vals['RPM'][count]
-        r_plot.axes.set_ylim(top=r_max+7)
+        xr[0].set_height(height_vals['RPM'][count])
+        if height_vals['RPM'][count] > r_max:
+            r_max = height_vals['RPM'][count]
+            r_plot.axes.set_ylim(top=r_max+7)
 
-    xe[0].set_height(height_vals['Energy'][count])
-    if height_vals['Energy'][count] > e_max:
-        e_max = height_vals['Energy'][count]
-        e_plot.axes.set_ylim(top=e_max+7)
+        xe[0].set_height(height_vals['Energy'][count])
+        if height_vals['Energy'][count] > e_max:
+            e_max = height_vals['Energy'][count]
+            e_plot.axes.set_ylim(top=e_max+7)
 
-    count = (count + 1) % (len(height_vals['Energy'])-1)
+        count = (count + 1) % (len(height_vals['Energy'])-1)
 
 
 anim = animation.FuncAnimation(fig, animate, repeat=False, blit=False, interval=nf)
