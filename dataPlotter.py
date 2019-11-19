@@ -87,11 +87,23 @@ while not connected:
     txt = 'Establishing connection with ESP8266 module'
     test_counter += 1
 
-    # if connection successful
+    # if connection successful (test up to 5 connections)
     try:
         socket.gethostbyaddr('192.168.4.1')
     except socket.herror:
-        connected = False
+        try:
+            socket.gethostbyaddr('192.168.4.2')
+        except socket.herror:
+            try:
+                socket.gethostbyaddr('192.168.4.3')
+            except socket.herror:
+                try:
+                    socket.gethostbyaddr('192.168.4.4')
+                except socket.herror:
+                    try:
+                        socket.gethostbyaddr('192.168.4.5')
+                    except socket.herror:
+                        connected = False
     else:
         connected = True
         load_msg.configure(text='Connected')
@@ -187,7 +199,7 @@ def reset(i):
     os.execl(sys.executable, sys.executable, *sys.argv)
 
 
-def barlist ():
+def barlist():
     graph_data = open('testData.txt', 'r').read()       # dont need to read the whole file in every iteration
     lines = graph_data.split('\n')
     v_arr = []
@@ -301,7 +313,6 @@ xkwh = plt.bar('US Dollars', e_kwh+0.05, color='#2ECC71')
 plt.title('Energy ($)')
 plt.text(0, (e_kwh+0.05)/2, "$ "+str(e_kwh)[0:str(e_kwh).find('.')+3], horizontalalignment='center',
          verticalalignment='center', fontsize=18)
-
 
 button_axis = plt.axes([0.4625, 0.025, 0.1, 0.05])
 btn_restart = Button(button_axis, 'Restart', color='#AEB6BF', hovercolor='#85929E')
