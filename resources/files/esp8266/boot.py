@@ -8,7 +8,7 @@ import network
 import esp
 import uos
 import machine
-#uos.dupterm(None, 1) # disable REPL on UART(0)
+uos.dupterm(None, 1) # disable REPL on UART(0)
 import gc
 import webrepl
 from machine import UART
@@ -19,7 +19,6 @@ webrepl.start()
 gc.collect()
 
 led = machine.Pin(2, machine.Pin.OUT)
-uart = UART(0, 115200, 8, None, 1)
 
 # SSID and Password configuration
 ########################################################

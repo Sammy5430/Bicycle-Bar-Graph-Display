@@ -199,7 +199,7 @@ def web_page():
     <h1>ESP Web Server</h1>
         <p>UART data: <strong>""" + uart_str + """</strong></p>
     <p><a href="/?measure">
-    <button class="button">Measure</button>
+    <button class="button">Clear</button>
     </a></p>
     <p><a href="/?transmit">
     <button class="button button2">Transmit</button>
@@ -207,10 +207,6 @@ def web_page():
     </body>
     </html>"""
     return html
-
-
-def uart_irq(obj):
-    print(str(obj.any()))
 
 
 uart = UART(0, 115200, 8, None, 1)
@@ -234,12 +230,23 @@ while True:
     print("find /?measure  " + str(m_btn))
     print("find /?transmit  " + str(t_btn))
     if m_btn == 6:
-        uart.write('m')
-        uart.irq(trigger=UART.RX_ANY, priority=1, handler=uart_irq, wake=machine.IDLE)
+        # uart.write('m')
+        uart_str = ""
     elif t_btn == 6:
-        uart.write('t')
-        print(str(uart.read()))
-        # uart_str = str(uart.read(30))
+        uart.write('x')
+        time.sleep(0.1)
+        uart_str = uart_str + str(uart.read())
+        time.sleep(0.1)
+        uart.write('y')
+        time.sleep(0.1)
+        uart_str = uart_str + str(uart.read())
+        time.sleep(0.1)
+        uart.write('z')
+        time.sleep(0.1)
+        uart_str = uart_str + str(uart.read())
+        time.sleep(0.1)
+        uart.write('m')
+        print("\ndata read: " + uart_str)
     response = web_page()
     conn.send('HTTP/1.1 200 OK\n')
     conn.send('Content-Type: text/html\n')
