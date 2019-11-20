@@ -15,22 +15,7 @@ from matplotlib.widgets import Button
 from datetime import datetime
 
 
-# resp = req.get('http://192.168.4.1')            # HTTP GET Response
-# html = resp.text                             # Get content as HTML String
-# txt = re.sub('<[^<]+?>', '', html)
-# html_arr = str(txt).split()
-#
-# esp_v = html_arr[html_arr.index('Voltage:') + 1]
-# esp_c = html_arr[html_arr.index('Current:') + 1]
-# esp_p = html_arr[html_arr.index('Power:') + 1]
-# esp_r = html_arr[html_arr.index('RPM:') + 1]
-# esp_e = html_arr[html_arr.index('Energy:') + 1]
-#
-# print('voltage: ' + esp_v + '\n')
-# print('current: ' + esp_c + '\n')
-# print('power: ' + esp_p + '\n')
-# print('rpm: ' + esp_r + '\n')
-# print('energy: ' + esp_e + '\n')
+
 
 
 # Await connection with ESP8266 Module
@@ -120,6 +105,30 @@ while not connected:
             tk_window.update()
             tk_window.after(8)
 ###############################################################################################################
+
+
+
+resp = req.get('http://192.168.4.1')            # HTTP GET Response
+html = resp.text                             # Get content as HTML String
+txt = re.sub('<[^<]+?>', '', html)
+html_arr = str(txt).split()
+
+esp_v = html_arr[html_arr.index('Voltage:') + 1]
+esp_c = html_arr[html_arr.index('Current:') + 1]
+esp_p = html_arr[html_arr.index('Power:') + 1]
+esp_r = html_arr[html_arr.index('RPM:') + 1]
+esp_e = html_arr[html_arr.index('Energy:') + 1]
+
+print('voltage: ' + esp_v + '\n')
+print('current: ' + esp_c + '\n')
+print('power: ' + esp_p + '\n')
+print('rpm: ' + esp_r + '\n')
+print('energy: ' + esp_e + '\n')
+
+
+
+
+
 
 t_stamp = datetime.now().strftime('%B-%d-%Y %I:%M%p')
 start_time = time.time()
