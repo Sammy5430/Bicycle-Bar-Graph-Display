@@ -15,9 +15,6 @@ from matplotlib.widgets import Button
 from datetime import datetime
 
 
-
-
-
 # Await connection with ESP8266 Module
 ###############################################################################################################
 first_exec = True
@@ -107,29 +104,25 @@ while not connected:
 ###############################################################################################################
 
 
+# resp = req.get('http://192.168.4.1')            # HTTP GET Response
+# html = resp.text                             # Get content as HTML String
+# txt = re.sub('<[^<]+?>', '', html)
+# html_arr = str(txt).split()
+#
+# esp_v = html_arr[html_arr.index('v') + 2]
+# esp_c = html_arr[html_arr.index('c') + 2]
+# esp_p = html_arr[html_arr.index('p') + 2]
+# esp_r = html_arr[html_arr.index('r') + 2]
+# esp_e = html_arr[html_arr.index('e') + 2]
+#
+# print('voltage: ' + esp_v + '\n')
+# print('current: ' + esp_c + '\n')
+# print('power: ' + esp_p + '\n')
+# print('rpm: ' + esp_r + '\n')
+# print('energy: ' + esp_e + '\n')
 
-resp = req.get('http://192.168.4.1')            # HTTP GET Response
-html = resp.text                             # Get content as HTML String
-txt = re.sub('<[^<]+?>', '', html)
-html_arr = str(txt).split()
-
-esp_v = html_arr[html_arr.index('Voltage:') + 1]
-esp_c = html_arr[html_arr.index('Current:') + 1]
-esp_p = html_arr[html_arr.index('Power:') + 1]
-esp_r = html_arr[html_arr.index('RPM:') + 1]
-esp_e = html_arr[html_arr.index('Energy:') + 1]
-
-print('voltage: ' + esp_v + '\n')
-print('current: ' + esp_c + '\n')
-print('power: ' + esp_p + '\n')
-print('rpm: ' + esp_r + '\n')
-print('energy: ' + esp_e + '\n')
-
-
-
-
-
-
+# Initialize Parameters
+###################################################################
 t_stamp = datetime.now().strftime('%B-%d-%Y %I:%M%p')
 start_time = time.time()
 x_axis = ['Voltage', 'Current', 'Power', 'RPM', 'Energy']
@@ -145,6 +138,7 @@ e_kwh = 0           # max energy in Kw/h
 nf = 100  #Number of frames
 count = 0
 play = True
+#####################################################################
 
 # Plot graphs
 ##############################################################
@@ -164,11 +158,11 @@ xp = plt.bar('Watts', p_max, color='#E74C3C')
 plt.title('Power')
 
 r_plot = plt.subplot(154)
-xe = plt.bar('RPM', r_max, color='#8E44AD')
+xr = plt.bar('RPM', r_max, color='#8E44AD')
 plt.title('RPM')
 
 e_plot = plt.subplot(155)
-xr = plt.bar('Joules', e_max, color='#3498DB')
+xe = plt.bar('Joules', e_max, color='#3498DB')
 plt.title('Energy')
 ##############################################################
 
@@ -245,39 +239,83 @@ def animate(i):
         return
     else:
         global count, xv, xc, xp, xe, xr, v_max, c_max, p_max, r_max, e_max, v_plot, c_plot, p_plot, r_plot, e_plot
-        fig.suptitle("Elapsed Time: " + time.strftime("00:%M:%S", time.localtime(time.time() - start_time)), fontsize=20)
-        height_vals = barlist()
+        fig.suptitle("Elapsed Time: " + time.strftime("00:%M:%S", time.localtime(time.time() - start_time)),
+                     fontsize=20)
+        req.post('http://192.168.4.1')
+        resp = req.get('http://192.168.4.1')  # HTTP GET Response
+        print(resp.text)
+        html = resp.text  # Get content as HTML String
+        txt = re.sub('<[^<]+?>', '', html)
+        html_arr = str(txt).split()
+        html_arr = html_arr[9:24]       # measures can be found between the specified range
 
-        xv[0].set_height(height_vals['Voltage'][count])
-        if height_vals['Voltage'][count] > v_max:
-            v_max = height_vals['Voltage'][count]
+        esp_v = int(html_arr[html_arr.index('v') + 2])
+        esp_c = int(html_arr[html_arr.index('c') + 2])
+        esp_p = int(html_arr[html_arr.index('p') + 2])
+        esp_r = int(html_arr[html_arr.index('r') + 2])
+        esp_e = int(html_arr[html_arr.index('e') + 2])
+
+        xv[0].set_height(esp_v)
+        if esp_v > v_max:
+            v_max = esp_v
             v_plot.axes.set_ylim(top=v_max+7)
 
-        xc[0].set_height(height_vals['Current'][count])
-        if height_vals['Current'][count] > c_max:
-            c_max = height_vals['Current'][count]
+        xc[0].set_height(esp_c)
+        if esp_c > c_max:
+            c_max = esp_c
             c_plot.axes.set_ylim(top=c_max+7)
 
-        xp[0].set_height(height_vals['Power'][count])
-        if height_vals['Power'][count] > p_max:
-            p_max = height_vals['Power'][count]
+        xp[0].set_height(esp_p)
+        if esp_p > p_max:
+            p_max = esp_p
             p_plot.axes.set_ylim(top=p_max+7)
 
-        xr[0].set_height(height_vals['RPM'][count])
-        if height_vals['RPM'][count] > r_max:
-            r_max = height_vals['RPM'][count]
+        xr[0].set_height(esp_r)
+        if esp_r > r_max:
+            r_max = esp_r
             r_plot.axes.set_ylim(top=r_max+7)
 
-        xe[0].set_height(height_vals['Energy'][count])
-        if height_vals['Energy'][count] > e_max:
-            e_max = height_vals['Energy'][count]
+        xe[0].set_height(esp_e)
+        if esp_e > e_max:
+            e_max = esp_e
             e_plot.axes.set_ylim(top=e_max+7)
 
-        count = (count + 1) % (len(height_vals['Energy'])-1)
+        # animation with test data
+        ##########################################################################
+        # height_vals = barlist()
+        #
+        # xv[0].set_height(height_vals['Voltage'][count])
+        # if height_vals['Voltage'][count] > v_max:
+        #     v_max = height_vals['Voltage'][count]
+        #     v_plot.axes.set_ylim(top=v_max+7)
+        #
+        # xc[0].set_height(height_vals['Current'][count])
+        # if height_vals['Current'][count] > c_max:
+        #     c_max = height_vals['Current'][count]
+        #     c_plot.axes.set_ylim(top=c_max+7)
+        #
+        # xp[0].set_height(height_vals['Power'][count])
+        # if height_vals['Power'][count] > p_max:
+        #     p_max = height_vals['Power'][count]
+        #     p_plot.axes.set_ylim(top=p_max+7)
+        #
+        # xr[0].set_height(height_vals['RPM'][count])
+        # if height_vals['RPM'][count] > r_max:
+        #     r_max = height_vals['RPM'][count]
+        #     r_plot.axes.set_ylim(top=r_max+7)
+        #
+        # xe[0].set_height(height_vals['Energy'][count])
+        # if height_vals['Energy'][count] > e_max:
+        #     e_max = height_vals['Energy'][count]
+        #     e_plot.axes.set_ylim(top=e_max+7)
+        #
+        # count = (count + 1) % (len(height_vals['Energy'])-1)
+        ##########################################################################
 
 
 anim = animation.FuncAnimation(fig, animate, repeat=False, blit=False, interval=nf)
 plt.show()
+
 
 # Show Summary
 ###################################################################################################################
@@ -329,7 +367,7 @@ btn_restart = Button(button_axis, 'Restart', color='#AEB6BF', hovercolor='#85929
 btn_restart.on_clicked(reset)
 
 # add entry to log file
-####################################################################################################################
+#########################################################################################################
 try:
     log = open('resources/files/logfile.csv', 'x')
     log.close()
@@ -341,7 +379,7 @@ except:
 log = open('resources/files/logfile.csv', 'a')
 log.write(t_stamp+','+elapsed_time+','+str(v_max)+','+str(c_max)+','+str(p_max)+','+str(r_max)+','+str(e_max)+'\n')
 log.close()
-####################################################################################################################
+#########################################################################################################
 
 plt.show()
 ###################################################################################################################
