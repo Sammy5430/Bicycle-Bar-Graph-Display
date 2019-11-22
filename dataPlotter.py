@@ -185,84 +185,87 @@ def reset(i):
     os.execl(sys.executable, sys.executable, *sys.argv)
 
 
-def barlist():
-    graph_data = open('testData.txt', 'r').read()       # dont need to read the whole file in every iteration
-    lines = graph_data.split('\n')
-    v_arr = []
-    c_arr = []
-    p_arr = []
-    r_arr = []
-    e_arr = []
-    for line in lines:
-        if len(line) > 1:
-            x, y = line.split(',')
-            if x == 'Voltage':
-                v_arr.append(float(y))
-            elif x == 'Current':
-                c_arr.append(float(y))
-            elif x == 'Power':
-                p_arr.append(float(y))
-            elif x == 'RPM':
-                r_arr.append(float(y))
-            elif x == 'Energy':
-                e_arr.append(float(y))
-    values = {'Voltage': v_arr,
-              'Current': c_arr,
-              'Power': p_arr,
-              'RPM': r_arr,
-              'Energy': e_arr}
-    return values
+# def barlist():
+#     graph_data = open('testData.txt', 'r').read()       # dont need to read the whole file in every iteration
+#     lines = graph_data.split('\n')
+#     v_arr = []
+#     c_arr = []
+#     p_arr = []
+#     r_arr = []
+#     e_arr = []
+#     for line in lines:
+#         if len(line) > 1:
+#             x, y = line.split(',')
+#             if x == 'Voltage':
+#                 v_arr.append(float(y))
+#             elif x == 'Current':
+#                 c_arr.append(float(y))
+#             elif x == 'Power':
+#                 p_arr.append(float(y))
+#             elif x == 'RPM':
+#                 r_arr.append(float(y))
+#             elif x == 'Energy':
+#                 e_arr.append(float(y))
+#     values = {'Voltage': v_arr,
+#               'Current': c_arr,
+#               'Power': p_arr,
+#               'RPM': r_arr,
+#               'Energy': e_arr}
+#     return values
 
 
 def animate(i):
+    # try:
+    #     socket.gethostbyaddr('192.168.4.1')
+    # except:
+    #     plt.close()
+    #     return
+    # else:
+    global count, xv, xc, xp, xe, xr, v_max, c_max, p_max, r_max, e_max, v_plot, c_plot, p_plot, r_plot, e_plot
+    fig.suptitle("Elapsed Time: " + time.strftime("00:%M:%S", time.localtime(time.time() - start_time)),
+                 fontsize=20)
     try:
-        socket.gethostbyaddr('192.168.4.1')
+        resp = req.get('http://192.168.4.1', timeout=4)  # HTTP GET Response
     except:
         plt.close()
         return
-    else:
-        global count, xv, xc, xp, xe, xr, v_max, c_max, p_max, r_max, e_max, v_plot, c_plot, p_plot, r_plot, e_plot
-        fig.suptitle("Elapsed Time: " + time.strftime("00:%M:%S", time.localtime(time.time() - start_time)),
-                     fontsize=20)
-        resp = req.get('http://192.168.4.1')  # HTTP GET Response
-        # print(resp.text)
-        html = resp.text  # Get content as HTML String
-        html_txt = re.sub('<[^<]+?>', '', html)
-        html_arr = str(html_txt).split()
-        # print(html_arr)
-        html_arr = html_arr[9:24]       # measures can be found between the specified range
+    # print(resp.text)
+    html = resp.text  # Get content as HTML String
+    html_txt = re.sub('<[^<]+?>', '', html)
+    html_arr = str(html_txt).split()
+    # print(html_arr)
+    html_arr = html_arr[9:24]       # measures can be found between the specified range
 
-        esp_v = int(html_arr[html_arr.index('v') + 2])
-        print("voltage: " + str(esp_v))
-        esp_c = int(html_arr[html_arr.index('c') + 2])
-        esp_p = int(html_arr[html_arr.index('p') + 2])
-        esp_r = int(html_arr[html_arr.index('r') + 2])
-        esp_e = int(html_arr[html_arr.index('e') + 2])
+    esp_v = int(html_arr[html_arr.index('v') + 2])
+    esp_c = int(html_arr[html_arr.index('c') + 2])
+    esp_p = int(html_arr[html_arr.index('p') + 2])
+    esp_r = int(html_arr[html_arr.index('r') + 2])
+    esp_e = int(html_arr[html_arr.index('e') + 2])
 
-        xv[0].set_height(esp_v)
-        if esp_v > v_max:
-            v_max = esp_v
-            v_plot.axes.set_ylim(top=v_max+7)
+    xv[0].set_height(esp_v)
+    if esp_v > v_max:
+        v_max = esp_v
+        v_plot.axes.set_ylim(top=v_max+7)
 
-        xc[0].set_height(esp_c)
-        if esp_c > c_max:
-            c_max = esp_c
-            c_plot.axes.set_ylim(top=c_max+7)
+    xc[0].set_height(esp_c)
+    if esp_c > c_max:
+        c_max = esp_c
+        c_plot.axes.set_ylim(top=c_max+7)
 
-        xp[0].set_height(esp_p)
-        if esp_p > p_max:
-            p_max = esp_p
-            p_plot.axes.set_ylim(top=p_max+7)
+    xp[0].set_height(esp_p)
+    if esp_p > p_max:
+        p_max = esp_p
+        p_plot.axes.set_ylim(top=p_max+7)
 
-        xr[0].set_height(esp_r)
-        if esp_r > r_max:
-            r_max = esp_r
-            r_plot.axes.set_ylim(top=r_max+7)
+    xr[0].set_height(esp_r)
+    if esp_r > r_max:
+        r_max = esp_r
+        r_plot.axes.set_ylim(top=r_max+7)
 
-        xe[0].set_height(esp_e)
-        if esp_e > e_max:
-            e_max = esp_e
-            e_plot.axes.set_ylim(top=e_max+7)
+    xe[0].set_height(esp_e)
+    if esp_e > e_max:
+        e_max = esp_e
+        e_plot.axes.set_ylim(top=e_max+7)
 
         # animation with test data
         ##########################################################################
