@@ -180,37 +180,37 @@ import time
 
 # Custom webpage attempt
 ###########################################################################
-count = 0
 uart_str = ""
+str1 = None
+str2 = None
+str3 = None
+str4 = None
+str5 = None
+
+# <meta http-equiv="refresh" content="3">
 
 def web_page():
     html = """<html>
     <head>
-    <title>ESP Web Server</title>
+    <title>BBG-Display Data</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
     <link rel="icon" href="data:,">
-    <style>html{font-family: Helvetica; display:inline-block; margin: 0px auto; text-align: center;}
-        h1{color: #0F3376; padding: 2vh;}p{font-size: 1.5rem;}.button{display: inline-block; background-color: #e7bd3b; border: none;
-        border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
-        .button2{background-color: #4286f4;}</style>
+
     </head>
 
     <body>
-    <h1>ESP Web Server</h1>
+    <h1>Bicycle Bar Graph Display Data:</h1>
         <p>UART data: <strong>""" + uart_str + """</strong></p>
     <p><a href="/?measure">
-    <button class="button">Measure</button>
+    <button class="button">Stop</button>
     </a></p>
     <p><a href="/?transmit">
-    <button class="button button2">Transmit</button>
+    <button class="button button2">Auto-Refresh</button>
     </a></p>
     </body>
     </html>"""
     return html
-
-
-def uart_irq(obj):
-    print(str(obj.any()))
 
 
 uart = UART(0, 115200, 8, None, 1)
@@ -221,25 +221,58 @@ s.listen(5)
 
 # v = 10 c = 3 p = 9 r = 776 e =2
 
+
 while True:
     conn, addr = s.accept()
     print('Got a connection from %s' % str(addr) + "\n\n")
     request = conn.recv(1024)
     request = str(request)
-    print('Content = %s' % request + "\n\n")
-    count += 1
+    # print('Content = %s' % request + "\n\n")
     m_btn = request.find('/?measure')
     t_btn = request.find('/?transmit')
 
     print("find /?measure  " + str(m_btn))
     print("find /?transmit  " + str(t_btn))
-    if m_btn == 6:
-        uart.write('m')
-        uart.irq(trigger=UART.RX_ANY, priority=1, handler=uart_irq, wake=machine.IDLE)
-    elif t_btn == 6:
-        uart.write('t')
-        print(str(uart.read()))
-        # uart_str = str(uart.read(30))
+
+    # if m_btn == 6:
+    #     # uart.write('m')
+    #     uart_str = ""
+    # elif t_btn == 6:
+    while str1 is None:
+        uart.write('v')
+        time.sleep(0.05)
+        str1 = uart.read()
+        time.sleep(0.05)
+    while str2 is None:
+        uart.write('w')
+        time.sleep(0.05)
+        str2 = uart.read()
+        time.sleep(0.05)
+    while str3 is None:
+        uart.write('x')
+        time.sleep(0.05)
+        str3 = uart.read()
+        time.sleep(0.05)
+    while str4 is None:
+        uart.write('y')
+        time.sleep(0.05)
+        str4 = uart.read()
+        time.sleep(0.05)
+    while str5 is None:
+        uart.write('z')
+        time.sleep(0.05)
+        str5 = uart.read()
+        time.sleep(0.05)
+    uart.write('m')
+    uart_str = str(str1).strip("b\'") + str(str2).strip("b\'") + str(str3).strip("b\'") + str(str4).strip("b\'") + \
+               str(str5).strip("b\'")
+    str1 = None
+    str2 = None
+    str3 = None
+    str4 = None
+    str5 = None
+    print("\ndata read: " + uart_str)
+    gc.collect()
     response = web_page()
     conn.send('HTTP/1.1 200 OK\n')
     conn.send('Content-Type: text/html\n')
