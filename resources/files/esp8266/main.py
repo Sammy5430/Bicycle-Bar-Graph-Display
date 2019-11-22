@@ -187,11 +187,14 @@ str3 = None
 str4 = None
 str5 = None
 
+# <meta http-equiv="refresh" content="3">
+
 def web_page():
     html = """<html>
     <head>
     <title>BBG-Display Data</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
     <link rel="icon" href="data:,">
 
     </head>
@@ -200,10 +203,10 @@ def web_page():
     <h1>Bicycle Bar Graph Display Data:</h1>
         <p>UART data: <strong>""" + uart_str + """</strong></p>
     <p><a href="/?measure">
-    <button class="button">Clear</button>
+    <button class="button">Stop</button>
     </a></p>
     <p><a href="/?transmit">
-    <button class="button button2">Transmit</button>
+    <button class="button button2">Auto-Refresh</button>
     </a></p>
     </body>
     </html>"""
@@ -218,6 +221,7 @@ s.listen(5)
 
 # v = 10 c = 3 p = 9 r = 776 e =2
 
+
 while True:
     conn, addr = s.accept()
     print('Got a connection from %s' % str(addr) + "\n\n")
@@ -230,35 +234,35 @@ while True:
     print("find /?measure  " + str(m_btn))
     print("find /?transmit  " + str(t_btn))
 
-    if m_btn == 6:
-        # uart.write('m')
-        uart_str = ""
-    elif t_btn == 6:
-        while str1 is None:
-            uart.write('v')
-            time.sleep(0.1)
-            str1 = uart.read()
-            time.sleep(0.1)
-        while str2 is None:
-            uart.write('w')
-            time.sleep(0.1)
-            str2 = uart.read()
-            time.sleep(0.1)
-        while str3 is None:
-            uart.write('x')
-            time.sleep(0.1)
-            str3 = uart.read()
-            time.sleep(0.1)
-        while str4 is None:
-            uart.write('y')
-            time.sleep(0.1)
-            str4 = uart.read()
-            time.sleep(0.1)
-        while str5 is None:
-            uart.write('z')
-            time.sleep(0.1)
-            str5 = uart.read()
-            time.sleep(0.1)
+    # if m_btn == 6:
+    #     # uart.write('m')
+    #     uart_str = ""
+    # elif t_btn == 6:
+    while str1 is None:
+        uart.write('v')
+        time.sleep(0.05)
+        str1 = uart.read()
+        time.sleep(0.05)
+    while str2 is None:
+        uart.write('w')
+        time.sleep(0.05)
+        str2 = uart.read()
+        time.sleep(0.05)
+    while str3 is None:
+        uart.write('x')
+        time.sleep(0.05)
+        str3 = uart.read()
+        time.sleep(0.05)
+    while str4 is None:
+        uart.write('y')
+        time.sleep(0.05)
+        str4 = uart.read()
+        time.sleep(0.05)
+    while str5 is None:
+        uart.write('z')
+        time.sleep(0.05)
+        str5 = uart.read()
+        time.sleep(0.05)
     uart.write('m')
     uart_str = str(str1).strip("b\'") + str(str2).strip("b\'") + str(str3).strip("b\'") + str(str4).strip("b\'") + \
                str(str5).strip("b\'")
