@@ -187,6 +187,12 @@ str3 = None
 str4 = None
 str5 = None
 
+str1_prev = " v = 0"
+str2_prev = " c = 0"
+str3_prev = " p = 0"
+str4_prev = " r = 0"
+str5_prev = " e = 0"
+
 # <meta http-equiv="refresh" content="3">
 
 def web_page():
@@ -238,31 +244,51 @@ while True:
     #     # uart.write('m')
     #     uart_str = ""
     # elif t_btn == 6:
-    while str1 is None:
-        uart.write('v')
-        time.sleep(0.05)
-        str1 = uart.read()
-        time.sleep(0.05)
-    while str2 is None:
-        uart.write('w')
-        time.sleep(0.05)
-        str2 = uart.read()
-        time.sleep(0.05)
-    while str3 is None:
-        uart.write('x')
-        time.sleep(0.05)
-        str3 = uart.read()
-        time.sleep(0.05)
-    while str4 is None:
-        uart.write('y')
-        time.sleep(0.05)
-        str4 = uart.read()
-        time.sleep(0.05)
-    while str5 is None:
-        uart.write('z')
-        time.sleep(0.05)
-        str5 = uart.read()
-        time.sleep(0.05)
+    # while str1 is None:
+    uart.write('v')
+    time.sleep(0.05)
+    str1 = uart.read()
+    time.sleep(0.05)
+    if str1 is None:
+        str1 = str1_prev
+    else:
+        str1_prev = str1
+# while str2 is None:
+    uart.write('w')
+    time.sleep(0.05)
+    str2 = uart.read()
+    time.sleep(0.05)
+    if str2 is None:
+        str2 = str2_prev
+    else:
+        str2_prev = str2
+# while str3 is None:
+    uart.write('x')
+    time.sleep(0.05)
+    str3 = uart.read()
+    time.sleep(0.05)
+    if str3 is None:
+        str3 = str3_prev
+    else:
+        str3_prev = str3
+# while str4 is None:
+    uart.write('y')
+    time.sleep(0.05)
+    str4 = uart.read()
+    time.sleep(0.05)
+    if str4 is None:
+        str4 = str4_prev
+    else:
+        str4_prev = str4
+# while str5 is None:
+    uart.write('z')
+    time.sleep(0.05)
+    str5 = uart.read()
+    time.sleep(0.05)
+    if str5 is None:
+        str5 = str5_prev
+    else:
+        str5_prev = str5
     uart.write('m')
     uart_str = str(str1).strip("b\'") + str(str2).strip("b\'") + str(str3).strip("b\'") + str(str4).strip("b\'") + \
                str(str5).strip("b\'")
@@ -280,3 +306,67 @@ while True:
     conn.sendall(response)
     conn.close()
 ###########################################################################
+
+
+
+
+# For reference, this implementation works
+########################################################################
+# conn, addr = s.accept()
+#     print('Got a connection from %s' % str(addr) + "\n\n")
+#     request = conn.recv(1024)
+#     request = str(request)
+#     # print('Content = %s' % request + "\n\n")
+#     m_btn = request.find('/?measure')
+#     t_btn = request.find('/?transmit')
+#
+#     print("find /?measure  " + str(m_btn))
+#     print("find /?transmit  " + str(t_btn))
+#
+#     # if m_btn == 6:
+#     #     # uart.write('m')
+#     #     uart_str = ""
+#     # elif t_btn == 6:
+#     while str1 is None:
+#         uart.write('v')
+#         time.sleep(0.05)
+#         str1 = uart.read()
+#         time.sleep(0.05)
+#     while str2 is None:
+#         uart.write('w')
+#         time.sleep(0.05)
+#         str2 = uart.read()
+#         time.sleep(0.05)
+#     while str3 is None:
+#         uart.write('x')
+#         time.sleep(0.05)
+#         str3 = uart.read()
+#         time.sleep(0.05)
+#     while str4 is None:
+#         uart.write('y')
+#         time.sleep(0.05)
+#         str4 = uart.read()
+#         time.sleep(0.05)
+#     while str5 is None:
+#         uart.write('z')
+#         time.sleep(0.05)
+#         str5 = uart.read()
+#         time.sleep(0.05)
+#     uart.write('m')
+#     uart_str = str(str1).strip("b\'") + str(str2).strip("b\'") + str(str3).strip("b\'") + str(str4).strip("b\'") + \
+#                str(str5).strip("b\'")
+#     str1 = None
+#     str2 = None
+#     str3 = None
+#     str4 = None
+#     str5 = None
+#     print("\ndata read: " + uart_str)
+#     gc.collect()
+#     if str1 is not None and str2 is not None and str3 is not None and str4 is not None and str5 is not None:
+#         response = web_page()
+#     conn.send('HTTP/1.1 200 OK\n')
+#     conn.send('Content-Type: text/html\n')
+#     conn.send('Connection: close\n\n')
+#     conn.sendall(response)
+#     conn.close()
+########################################################################
