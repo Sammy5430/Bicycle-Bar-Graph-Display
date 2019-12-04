@@ -119,7 +119,7 @@ e_max = 0           # max energy
 e_cal = 0           # max energy in calories
 e_kwh = 0           # max energy in Kw/h
 
-nf = 1000  #Number of frames increases as this interval decreases
+nf = 1000           #refresh delay: framerate increases as this value decreases
 #count = 0
 ###################################################################
 
@@ -211,7 +211,7 @@ plt.title('Energy')
 #     return values
 ###################################################################################################################
 
-# Use to reset code execution with "restart" button
+# Used to reset code execution with "restart" button
 ###############################################################
 def reset(i):
     os.execl(sys.executable, sys.executable, *sys.argv)
@@ -243,8 +243,8 @@ def animate(i):
 
     try:
         esp_v = int(html_arr[html_arr.index('v') + 2])
-        esp_c = int(html_arr[html_arr.index('c') + 2])
-        esp_p = int(html_arr[html_arr.index('p') + 2])
+        esp_c = abs(float(html_arr[html_arr.index('c') + 2]))/1000
+        esp_p = abs(float(html_arr[html_arr.index('p') + 2]))/1000
         esp_r = int(html_arr[html_arr.index('r') + 2])
         esp_e = int(html_arr[html_arr.index('e') + 2])
     except:
@@ -258,7 +258,8 @@ def animate(i):
         xc[0].set_height(esp_c)
         if esp_c > c_max:
             c_max = esp_c
-            c_plot.axes.set_ylim(top=c_max+7)
+
+            c_plot.axes.set_ylim(top=c_max+1)
 
         xp[0].set_height(esp_p)
         if esp_p > p_max:
