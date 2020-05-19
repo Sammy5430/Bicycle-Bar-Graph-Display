@@ -9,6 +9,7 @@ import time
 import os
 import re
 import sys
+import platform
 import tkinter as tk
 import requests as req
 from tkinter import ttk, PhotoImage
@@ -71,25 +72,51 @@ while not connected:
     txt = 'Establishing connection with ESP8266 module'
     test_counter += 1
 
-    # if connection successful (test up to 5 connections)
-    try:
-        socket.gethostbyaddr('192.168.4.1')
-    except socket.herror:
+    # LINUX: check if connection successful (test up to 5 connections)
+    ##################################################################
+    if platform.system() == 'Linux':
         try:
-            socket.gethostbyaddr('192.168.4.2')
+            socket.gethostbyaddr('192.168.4.1')
+            connected = True
         except socket.herror:
             try:
-                socket.gethostbyaddr('192.168.4.3')
+                socket.gethostbyaddr('192.168.4.2')
             except socket.herror:
                 try:
-                    socket.gethostbyaddr('192.168.4.4')
+                    socket.gethostbyaddr('192.168.4.3')
                 except socket.herror:
                     try:
-                        socket.gethostbyaddr('192.168.4.5')
+                        socket.gethostbyaddr('192.168.4.4')
                     except socket.herror:
-                        connected = False
-    else:
+                        try:
+                            socket.gethostbyaddr('192.168.4.5')
+                        except socket.herror:
+                            connected = False
+    ####################################################################
+
+    # WINDOWS: check if connection successful (test up to 5 connections)
+    ##############################################################################
+    if platform.system() == 'Windows':
+        sockAddr = ('192.168.4.1', 1900)
+        sockInfo = socket.getnameinfo(sockAddr, socket.NI_NOFQDN)
         connected = True
+        if sockInfo != 0:
+            sockAddr = ('192.168.4.2', 1900)
+            sockInfo = socket.getnameinfo(sockAddr, socket.NI_NOFQDN)
+            if sockInfo != 0:
+                sockAddr = ('192.168.4.3', 1900)
+                sockInfo = socket.getnameinfo(sockAddr, socket.NI_NOFQDN)
+                if sockInfo != 0:
+                    sockAddr = ('192.168.4.4', 1900)
+                    sockInfo = socket.getnameinfo(sockAddr, socket.NI_NOFQDN)
+                    if sockInfo != 0:
+                        sockAddr = ('192.168.4.5', 1900)
+                        sockInfo = socket.getnameinfo(sockAddr, socket.NI_NOFQDN)
+                        if sockInfo != 0:
+                            connected = False
+    ##############################################################################
+
+    if connected:
         load_msg.configure(text='Connected')
         while frame_count < 120:
             if frame_count < 10:
