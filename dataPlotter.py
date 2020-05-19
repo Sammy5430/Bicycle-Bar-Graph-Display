@@ -18,6 +18,7 @@ from matplotlib.widgets import Button
 from datetime import datetime
 #######################################
 
+
 # Await connection with ESP8266 Module
 ###############################################################################################################
 first_exec = True
@@ -72,6 +73,7 @@ while not connected:
     txt = 'Establishing connection with ESP8266 module'
     test_counter += 1
 
+
     # LINUX: check if connection successful (test up to 5 connections)
     ##################################################################
     if platform.system() == 'Linux':
@@ -93,6 +95,7 @@ while not connected:
                         except socket.herror:
                             connected = False
     ####################################################################
+
 
     # WINDOWS: check if connection successful (test up to 5 connections)
     ##############################################################################
@@ -132,6 +135,7 @@ while not connected:
             tk_window.after(8)
 ###############################################################################################################
 
+
 # Initialize Parameters
 ###################################################################
 t_stamp = datetime.now().strftime('%B-%d-%Y %I:%M%p')
@@ -147,8 +151,8 @@ e_cal = 0           # max energy in calories
 e_kwh = 0           # max energy in Kw/h
 
 nf = 1000           #refresh delay: framerate increases as this value decreases
-#count = 0
 ###################################################################
+
 
 # Plot graphs
 ##############################################################
@@ -176,67 +180,6 @@ xe = plt.bar('Joules', e_max, color='#3498DB')
 plt.title('Energy')
 ##############################################################
 
-# Clear file
-#############################################
-# f = open('testData.txt', 'w')
-# f.write('')
-# f.close()
-#############################################
-
-# Populate file with random data
-###################################################################################
-# counter = 0
-# f = open('testData.txt', 'a')
-# while counter < 1000:
-#     v_rand = random.randint(0, 25)
-#     c_rand = random.randint(0, 15)
-#     p_rand = v_rand * c_rand
-#     r_rand = random.randint(0, 200)
-#     e_rand = (counter + 1) / 2
-#     strtext = "" + x_axis[counter % 5] + ", " + str(v_rand) + "\n"
-#     f.write(strtext)
-#     strtext = "" + x_axis[(counter + 1) % 5] + ", " + str(c_rand) + "\n"
-#     f.write(strtext)
-#     strtext = "" + x_axis[(counter + 2) % 5] + ", " + str(p_rand) + "\n"
-#     f.write(strtext)
-#     strtext = "" + x_axis[(counter + 3) % 5] + ", " + str(r_rand) + "\n"
-#     f.write(strtext)
-#     strtext = "" + x_axis[(counter + 4) % 5] + ", " + str(e_rand) + "\n"
-#     f.write(strtext)
-#     counter += 5
-# f.close()
-###################################################################################
-
-# Get data from test file
-###################################################################################################################
-# def barlist():
-#     graph_data = open('testData.txt', 'r').read()       # dont need to read the whole file in every iteration
-#     lines = graph_data.split('\n')
-#     v_arr = []
-#     c_arr = []
-#     p_arr = []
-#     r_arr = []
-#     e_arr = []
-#     for line in lines:
-#         if len(line) > 1:
-#             x, y = line.split(',')
-#             if x == 'Voltage':
-#                 v_arr.append(float(y))
-#             elif x == 'Current':
-#                 c_arr.append(float(y))
-#             elif x == 'Power':
-#                 p_arr.append(float(y))
-#             elif x == 'RPM':
-#                 r_arr.append(float(y))
-#             elif x == 'Energy':
-#                 e_arr.append(float(y))
-#     values = {'Voltage': v_arr,
-#               'Current': c_arr,
-#               'Power': p_arr,
-#               'RPM': r_arr,
-#               'Energy': e_arr}
-#     return values
-###################################################################################################################
 
 # Used to reset code execution with "restart" button
 ###############################################################
@@ -246,13 +189,6 @@ def reset(i):
 
 
 def animate(i):
-    # try:
-    #     socket.gethostbyaddr('192.168.4.1')
-    # except:
-    #     plt.close()
-    #     return
-    # else:
-    # global count
     global xv, xc, xp, xe, xr, v_max, c_max, p_max, r_max, e_max, v_plot, c_plot, p_plot, r_plot, e_plot
     fig.suptitle("Elapsed Time: " + time.strftime("00:%M:%S", time.localtime(time.time() - start_time)),
                  fontsize=20)
@@ -261,11 +197,9 @@ def animate(i):
     except:
         plt.close()
         return
-    # print(resp.text)
     html = resp.text  # Get content as HTML String
     html_txt = re.sub('<[^<]+?>', '', html)
     html_arr = str(html_txt).split()
-    # print(html_arr)
     html_arr = html_arr[9:24]       # measures can be found between the specified range
 
     try:
@@ -302,39 +236,6 @@ def animate(i):
         if esp_e > e_max:
             e_max = esp_e
             e_plot.axes.set_ylim(top=e_max+7)
-
-        # animation with test data
-        ##########################################################################
-        # height_vals = barlist()
-        #
-        # xv[0].set_height(height_vals['Voltage'][count])
-        # if height_vals['Voltage'][count] > v_max:
-        #     v_max = height_vals['Voltage'][count]
-        #     v_plot.axes.set_ylim(top=v_max+7)
-        #
-        # xc[0].set_height(height_vals['Current'][count])
-        # if height_vals['Current'][count] > c_max:
-        #     c_max = height_vals['Current'][count]
-        #     c_plot.axes.set_ylim(top=c_max+7)
-        #
-        # xp[0].set_height(height_vals['Power'][count])
-        # if height_vals['Power'][count] > p_max:
-        #     p_max = height_vals['Power'][count]
-        #     p_plot.axes.set_ylim(top=p_max+7)
-        #
-        # xr[0].set_height(height_vals['RPM'][count])
-        # if height_vals['RPM'][count] > r_max:
-        #     r_max = height_vals['RPM'][count]
-        #     r_plot.axes.set_ylim(top=r_max+7)
-        #
-        # xe[0].set_height(height_vals['Energy'][count])
-        # if height_vals['Energy'][count] > e_max:
-        #     e_max = height_vals['Energy'][count]
-        #     e_plot.axes.set_ylim(top=e_max+7)
-        #
-        # count = (count + 1) % (len(height_vals['Energy'])-1)
-        ##########################################################################
-
 
 anim = animation.FuncAnimation(fig, animate, repeat=False, blit=False, interval=nf)
 plt.subplots_adjust(wspace=0.35)
@@ -411,6 +312,7 @@ log = open('resources/files/logfile.csv', 'a')
 log.write(t_stamp+','+elapsed_time+','+str(v_max)+','+str(c_max)+','+str(p_max)+','+str(r_max)+','+str(e_max)+'\n')
 log.close()
 #########################################################################################################
+
 plt.subplots_adjust(wspace=0.35)
 plt.show()
 ###################################################################################################################
